@@ -96,6 +96,7 @@ Cloth::Cloth(const Vec3& _origin_pos,
 
 double Cloth::timeStep() {
     int particleCount = static_cast<int>(particles.size());
+    omp_set_num_threads(NUM_THREAD);
     #pragma omp parallel for
     for (int i = 0; i < particleCount; i++) {
         particles[i].timeStep();
@@ -128,6 +129,7 @@ void Cloth::addForce(const Vec3 direction) {
 
 void Cloth::terrCollision() {
     int particleCount = static_cast<int>(particles.size());
+    omp_set_num_threads(NUM_THREAD);
     #pragma omp parallel for
     for (int i = 0; i < particleCount; i++) {
         Vec3 v = particles[i].getPos();

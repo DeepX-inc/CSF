@@ -58,6 +58,7 @@
 // #include <boost/progress.hpp>
 // post processing is only for connected component which is large than 50
 #define MAX_PARTICLE_FOR_POSTPROCESSIN    50
+#define NUM_THREAD 6
 
 struct XY {
     XY(int x1, int y1) {
