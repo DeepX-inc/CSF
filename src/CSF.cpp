@@ -50,6 +50,16 @@ CSF::CSF() {
 CSF::~CSF()
 {}
 
+void CSF::setEnableLogging(bool enable) {
+    is_logging_enabled = enable;
+}
+
+void CSF::log(const std::string& message) {
+    if (is_logging_enabled) {
+        std::cout << "[CSF]" << message << std::endl;
+    }
+}
+
 void CSF::setPointCloud(std::vector<csf::Point> points) {
     point_cloud.resize(points.size());
 
@@ -115,7 +125,11 @@ void CSF::do_filtering(std::vector<int>& groundIndexes,
                        std::vector<int>& offGroundIndexes,
                        bool              exportCloth) {
     // Terrain
-    // std::cout << "[" << this->index << "] Configuring terrain..." << std::endl;
+    std::stringstream ss;
+    ss.str("");
+    ss << "[do_filtering] [" << this->index << "] Configuring terrain...";
+    log(ss.str());
+
     csf::Point bbMin, bbMax;
     point_cloud.computeBoundingBox(bbMin, bbMax);
 
@@ -136,9 +150,10 @@ void CSF::do_filtering(std::vector<int>& groundIndexes,
         std::floor((bbMax.z - bbMin.z) / params.cloth_resolution)
     ) + 2 * clothbuffer_d;
 
-    // std::cout << "[" << this->index << "] Configuring cloth..." << std::endl;
-    // std::cout << "[" << this->index << "]  - width: " << width_num << " "
-    //      << "height: " << height_num << std::endl;
+    ss.str("");
+    ss << "[do_filtering] [" << this->index << "] Configuring cloth ";
+    ss << "with (w,h)=(" << width_num << "," << height_num << ") ...";
+    log(ss.str());
 
     Cloth cloth(
         origin_pos,
@@ -152,13 +167,17 @@ void CSF::do_filtering(std::vector<int>& groundIndexes,
         params.time_step
     );
 
-    // std::cout << "[" << this->index << "] Rasterizing..." << std::endl;
+    ss.str("");
+    ss << "[do_filtering] [" << this->index << "] Rasterizing...";
+    log(ss.str());
     Rasterization::RasterTerrian(cloth, point_cloud, cloth.getHeightvals());
 
     double time_step2 = params.time_step * params.time_step;
     double gravity    = 0.2;
 
-    // std::cout << "[" << this->index << "] Simulating..." << std::endl;
+    ss.str("");
+    ss << "[do_filtering] [" << this->index << "] Simulating...";
+    log(ss.str());
     cloth.addForce(Vec3(0, -gravity, 0) * time_step2);
 
     // boost::progress_display pd(params.interations);
@@ -174,7 +193,9 @@ void CSF::do_filtering(std::vector<int>& groundIndexes,
     }
 
     if (params.bSloopSmooth) {
-        // std::cout << "[" << this->index << "]  - post handle..." << std::endl;
+        ss.str("");
+        ss << "[do_filtering] [" << this->index << "] Post handle...";
+        log(ss.str());
         cloth.movableFilter();
     }
 
