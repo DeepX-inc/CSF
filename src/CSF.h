@@ -70,6 +70,12 @@ public:
     CSF();
     ~CSF();
 
+    // enable debug logs
+    void setEnableLogging(bool enable);
+
+    // conditional log based on setEnableLogging
+    void log(const std::string& message);
+
     // set pointcloud from vector
     void setPointCloud(std::vector<csf::Point> points);
     // set point cloud from a one-dimentional array. it defines a N*3 point cloud by the given rows.
@@ -107,6 +113,7 @@ public:
                       bool              exportCloth = false);
 
 private:
+    bool is_logging_enabled{false};
 
 #ifdef _CSF_DLL_EXPORT_
     class __declspec (dllexport)csf::PointCloud point_cloud;
